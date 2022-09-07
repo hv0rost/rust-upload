@@ -2,13 +2,13 @@ use mime::Mime;
 use warp::filters::BoxedFilter;
 use warp::{Filter, Reply};
 
-use crate::utils::helps;
+use crate::utils::deduplication;
 
 pub(super) async fn make_routes() -> BoxedFilter<(impl Reply,)>{
     let upload = warp::any()
         .and(warp::header::<Mime>("content-type"))
         .and(warp::body::stream())
-        .and_then(helps::multi_part);
+        .and_then(deduplication::multi_part);
 
     let cors = warp::cors()
         .allow_any_origin()
