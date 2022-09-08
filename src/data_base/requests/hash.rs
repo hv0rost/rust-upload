@@ -24,7 +24,7 @@ impl HashEntity {
         Ok(result.max.unwrap())
     }
 
-    pub async fn check_copy(pool: &PgPool, hash: String) -> Result<HashEntity, Error> {
+    pub async fn check_copy(pool: &PgPool, hash: &String) -> Result<HashEntity, Error> {
         let result = sqlx::query_as!(HashEntity, "SELECT * FROM hash WHERE hash = $1", hash)
             .fetch_one(pool)
             .await?;
@@ -32,11 +32,11 @@ impl HashEntity {
         Ok(result)
     }
 
-    pub async fn create_new_hash(pool: &PgPool, hash : HashEntity) {
+    pub async fn create_new_hash(pool: &PgPool, hash : String, block_name : i32) {
         sqlx::query!("INSERT INTO hash (hash, block_name) VALUES ($1, $2)",
-            hash.hash,
-            hash.block_name,
-        ).fetch_one(pool).await.unwrap();
+            hash,
+            block_name,
+        ).execute(pool).await.unwrap();
     }
 
     pub async fn delete_hash_data(pool: &PgPool, id : i32) {
